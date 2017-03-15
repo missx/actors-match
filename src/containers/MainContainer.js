@@ -5,6 +5,8 @@ import { Grid, Row, Col, Button } from 'react-bootstrap';
 
 import ActorInput from '../components/ActorInput';
 
+import Movies from '../helpers/movies';
+
 class MainContainer extends Component {
     
     constructor (props) {
@@ -13,7 +15,8 @@ class MainContainer extends Component {
         this.state = {
             firstActor: '',
             secondActor: '',
-            movies: []
+            movies: [],
+            error: ''
         }
         
         this.handleUpdateFirstActor = this.handleUpdateFirstActor.bind(this);
@@ -36,10 +39,25 @@ class MainContainer extends Component {
     
     handleSubmit(e) {
         e.preventDefault();
-        
-        this.setState({
-            movies: [1, 2]
-        })
+            
+        if (this.state.firstActor && this.state.secondActor) {
+            Movies.getMovies(this.state.firstActor, this.state.secondActor)
+            .then(function(results) {
+                
+                console.log('movies', results);
+                this.setState({
+                    movies: results
+                });
+            }).catch(function(err) {
+                this.setState({
+                    error: err 
+                });
+            });
+        } else {
+            this.setState({
+                error: 'One or both of the actors\'s names are missing.'
+            });
+        }
     }
 
     render() {
